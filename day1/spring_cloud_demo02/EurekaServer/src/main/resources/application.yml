@@ -1,0 +1,16 @@
+server:
+  port: 9000
+spring:
+  application:
+    name: eureka-server
+  main:
+    banner-mode: "off"
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    # 不注册自己到注册中心
+    register-with-eureka: false
+    # 是否从eureka中获取注册信息
+    fetch-registry: false
+    # 配置暴露给eureka client的请求地址
