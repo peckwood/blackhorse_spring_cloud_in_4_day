@@ -13,4 +13,6 @@ eureka:
     register-with-eureka: false
     # 是否从eureka中获取注册信息
     fetch-registry: false
-    # 配置暴露给eureka client的请求地址
+    # 配置暴露给eureka client的请求地址(黑马老师是这样说的)
+    service-url:
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
