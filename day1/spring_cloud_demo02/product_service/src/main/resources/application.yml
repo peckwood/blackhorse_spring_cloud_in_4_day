@@ -14,3 +14,10 @@ spring:
     open-in-view: true
   main:
     banner-mode: "off"
+  # 配置eureka
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+    instance:
+      prefer-ip-address: true # 使用ip地址注册
