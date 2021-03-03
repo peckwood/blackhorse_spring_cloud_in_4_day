@@ -14,7 +14,7 @@ spring:
     open-in-view: true
   main:
     banner-mode: "off"
-  # 配置eureka
+#配置eureka
 eureka:
   client:
     service-url:
