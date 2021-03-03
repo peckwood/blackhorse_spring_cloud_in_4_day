@@ -1,5 +1,7 @@
-server:
-  port: 9000
+#模拟2个EurekaServer
+# 端口9000, 8000
+# 2个server需要互相注册
+
 spring:
   application:
     name: eureka-server
@@ -9,10 +11,27 @@ eureka:
   instance:
     hostname: localhost
   client:
-    # 不注册自己到注册中心
-    register-with-eureka: false
-    # 是否从eureka中获取注册信息
-    fetch-registry: false
-    # 配置暴露给eureka client的请求地址(黑马老师是这样说的)
+    # 现在需要 注册自己到注册中心了
+    register-with-eureka: true
+    # 现在需要 从eureka中获取注册信息
+    fetch-registry: true
+---
+spring:
+  profiles: 9000
+server:
+  port: 9000
+eureka:
+  client:
     service-url:
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka
+      # 端口9000的server要注册8000的
+      defaultZone: http://127.0.0.1:8000/eureka
+---
+spring:
+  profiles: 8000
+server:
+  port: 8000
+eureka:
+  client:
+    service-url:
+      # 端口8000的server要注册9000的
+      defaultZone: http://127.0.0.1:9000/eureka

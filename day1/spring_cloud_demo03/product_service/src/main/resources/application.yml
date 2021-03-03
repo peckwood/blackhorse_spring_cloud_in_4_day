@@ -18,6 +18,7 @@ spring:
 eureka:
   client:
     service-url:
-      defaultZone: http://localhost:9000/eureka
-    instance:
-      prefer-ip-address: true # 使用ip地址注册
+      # 多个Eureka server之间用逗号隔开
+      defaultZone: http://localhost:9000/eureka, http://localhost:8000/eureka
+  instance:
+    prefer-ip-address: true # 使用ip地址注册
