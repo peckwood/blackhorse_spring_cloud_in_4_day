@@ -9,6 +9,10 @@ spring:
     banner-mode: "off"
 eureka:
   instance:
+#    发送心跳间隔
+    lease-renewal-interval-in-seconds: 5
+#    续约到期的时间
+    lease-expiration-duration-in-seconds: 5
     hostname: localhost
   client:
     # 现在需要 注册自己到注册中心了
@@ -23,8 +27,8 @@ server:
 eureka:
   client:
     service-url:
-      # 端口9000的server要注册8000的
-      defaultZone: http://127.0.0.1:8000/eureka
+#      端口9000的server要注册8000的
+      defaultZone: http://localhost:8000/eureka
 ---
 spring:
   profiles: 8000
@@ -33,5 +37,10 @@ server:
 eureka:
   client:
     service-url:
-      # 端口8000的server要注册9000的
-      defaultZone: http://127.0.0.1:9000/eureka
+#      端口8000的server要注册9000的
+      defaultZone: http://localhost:9000/eureka
+  server:
+#    关闭自我保护机制
+    enable-self-preservation: false
+#    剔除服务间隔缩短至4s
+    eviction-interval-timer-in-ms: 4000
