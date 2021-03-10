@@ -95,3 +95,14 @@ eureka:
     eviction-interval-timer-in-ms: 4000
 ```
 
+## Ribbon
+
+### 1 服务调用
+
+eureka内部继承了ribbon
+
+- 在创建RestTemplate的时候, 声明@LoadBalanced
+- 使用restTemplate调用远程微服务: 不需要拼接微服务的url, 以待请求的服务名替换IP地址
+
+
+

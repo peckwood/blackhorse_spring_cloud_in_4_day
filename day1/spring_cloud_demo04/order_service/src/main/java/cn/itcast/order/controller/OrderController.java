@@ -25,9 +25,9 @@ public class OrderController{
 
 
     /**
-     * 通过订单系统
-     * 根据product id 查询product
-     * @param id product id
+     * 基于ribbon的形式调用远程微服务
+     * 1.使用@LoadBalanced声明RestTemplate
+     * 2. 使用服务名称替换ip地址
      */
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
@@ -38,7 +38,7 @@ public class OrderController{
         //获取唯一的一个元数据
         ServiceInstance instance = instances.get(0);
         //根据元数据中的主机地址和端口号拼接请求
-        String url = "http://" + instance.getHost() + ":" + instance.getPort() + "/product/" + id;
+        String url = "http://service-product/product/" + id;
         Product product = restTemplate.getForObject(url, Product.class);
         return product;
     }
