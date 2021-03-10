@@ -22,3 +22,7 @@ eureka:
       defaultZone: http://localhost:9000/eureka, http://localhost:8000/eureka
   instance:
     prefer-ip-address: true
+#    修改ribbon的负载均衡策略 服务名 - ribbon - NFLoadBalancerRuleClassName: 策略
+service-product:
+  ribbon:
+    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
