@@ -1,5 +1,3 @@
-server:
-  port: 9001
 spring:
   application:
     name: service-product
@@ -28,3 +26,13 @@ eureka:
     lease-renewal-interval-in-seconds: 5
 #    续约到期的时间
     lease-expiration-duration-in-seconds: 10
+---
+spring:
+  profiles: 9001
+server:
+  port: 9001
+---
+spring:
+  profiles: 9011
+server:
+  port: 9011
