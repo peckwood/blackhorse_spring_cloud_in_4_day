@@ -7,7 +7,7 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 @EnableUserBean
 public class TestApplication{
     /**
-     * --> EnableUserBean -> User
+     * --> EnableUserBean -> UserImportSelector -> UserConfiguration -> User
      * @param args
      */
     public static void main(String[] args){
