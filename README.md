@@ -112,4 +112,50 @@ Ribbon是一个典型的**客户端负载均衡**器, Ribbon会获取服务的�
 在订单系统中远程以负载均衡的形式调用商品服务
 注意要启动2个product service(9001和9011)
 
+### 3 重试机制
+
+注意我把heart beat等信息都恢复默认了, 这样停掉的product service仍然会在eureka上保留注册一段时间
+
+问题呈现
+
+1. 恢复轮询模式
+2. 用order访问product, 当下一个要访问9011时, 停掉9011
+3. 访问9011
+4. 访问出错
+
+使用重试机制
+
+1. order service引入spring的重试组件
+
+2. 对ribbon进行重试配置
+
+   ```yaml
+   spring:
+     cloud:
+       loadbalancer:
+         retry:
+           enabled: true
+   #全局debug
+   logging:
+     level:
+       root: debug
+   #    修改ribbon的负载均衡策略 服务名 - ribbon - NFLoadBalancerRuleClassName: 策略
+   service-product:
+     ribbon:
+     #    NFLoadBalancerRuleClassName: com.netflix.loadbalancer.RandomRule
+       ConnectTimeout: 2500 # Ribbon的连接超时时间, 我测试不生效
+       ReadTimeout: 1000 # Ribbon的数据读取超时时间, 我测试不生效
+       OkToRetryOnAllOperations: true # 是否对所有操作都进行重试
+       MaxAutoRetriesNextServer: 1 # 切换实例的重试次数
+       MaxAutoRetries: 0 # 对当前实例的重试次数
+   ```
+
+3. 用order访问product, 当下一个要访问9011时, 停掉9011
+
+4. 访问9011
+
+5. 返回9001的响应
+
+
+
 
