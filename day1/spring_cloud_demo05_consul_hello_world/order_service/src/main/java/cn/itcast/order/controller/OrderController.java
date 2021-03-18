@@ -17,7 +17,7 @@ public class OrderController{
      */
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
-        String url = "http://localhost:9001/product/"+ id;
+        String url = "http://service-product/product/"+ id;
         Product product = restTemplate.getForObject(url, Product.class);
         return product;
     }
