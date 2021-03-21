@@ -16,6 +16,7 @@ spring:
     banner-mode: "off"
   cloud:
     consul:
+#      consul client的ip, 这里order和product公用一个consul client
       host: 127.0.0.1
       port: 8500
       discovery:

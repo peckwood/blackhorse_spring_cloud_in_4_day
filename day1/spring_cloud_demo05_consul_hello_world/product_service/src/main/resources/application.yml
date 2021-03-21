@@ -17,6 +17,7 @@ spring:
   #    开始配置consul的服务注册
   cloud:
     consul:
+#      consul client的ip, 这里order和product公用一个consul client
       host: 127.0.0.1
       port: 8500
       discovery:
