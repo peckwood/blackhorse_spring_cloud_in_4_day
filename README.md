@@ -184,8 +184,135 @@ Ribbon是一个典型的**客户端负载均衡**器, Ribbon会获取服务的�
 
 ### 2. 服务的消费者从consul中拉取所有的服务列表
 
+### Consul集群
+
+agent: 启动一个consule的守护进程
+
+dev: 开发者模式
+
+client: 是consul代理, 和consul server交互
+
+​	一个微服务对应一个client
+
+微服务和client部署到一台机器上
+
+server: 真正干活的consul服务
+
+推荐3-5个
+
+### Gossip: 流言协议
+
+所有的consul都会参与到gossip协议中多节点中数据复制()
+
+### Raft协议
+
+保证server集群的数据一致
+
+Leader: 是server集群中唯一处理客户端请求的
+
+Follower: 选民, 被动接受数据
+
+候选人: 可以被选举为leader
+
+![](https://img.raiden.live/images/2021/03/19/1569470458348._compressed.png)
+
+### 安装consul
+
+```bash
+sudo apt-get update -y
+apt-get install unzip gnupg2 curl wget -y
+wget https://releases.hashicorp.com/consul/1.9.4/consul_1.9.4_linux_amd64.zip
+unzip consul_1.9.4_linux_amd64.zip
+sudo mv consul /usr/local/bin/
+consul --version
 
 
+```
 
+> https://www.atlantic.net/vps-hosting/how-to-install-consul-server-on-ubuntu-20-04/
+
+### consul 集群
+
+1. 准备3台局域网linux服务器
+
+2. 开启8500等端口或关闭防火墙
+
+3. 安装consul
+
+4. 运行3台consul服务器
+
+   ```bash
+   sudo consul agent -server -bootstrap-expect 3 -data-dir /etc/consul.d -node=server-1 -bind=192.168.51.177 -ui -client 0.0.0.0 &
+   sudo consul agent -server -bootstrap-expect 3 -data-dir /etc/consul.d -node=server-2 -bind=192.168.51.146 -ui -client 0.0.0.0 &
+   sudo consul agent -server -bootstrap-expect 3 -data-dir /etc/consul.d -node=server-3 -bind=192.168.51.133 -ui -client 0.0.0.0 &
+   ```
+
+   -server 以server身份启动
+
+   -bootstrap-expect 3 集群要求的最少server数量, 当低于这个数量, 集群即失效
+
+   -node节点id, 在同一集群不能重复
+
+   -bind监听的ip地址
+
+   -ui 表示提供web ui
+
+   -client 客户端的ip地址 0.0.0.0表示运行任何ip访问
+
+   & 表示后台运行
+
+5. 运行本地consul client
+
+   ```powershell
+   cd D:\app\consul_1.9.4
+   ./consul agent -client='0.0.0.0' -bind='192.168.51.104' -data-dir /etc/consul.d -node=client-1
+   ```
+
+6. 这4台机器是互相独立的, 在其它机器上运行`consul join 192.168.51.177`, 把它们加入server-1的集群
+
+7. 查看成员 `consul members`, 会看到所有的成员
+
+   ```
+   Node      Address              Status  Type    Build  Protocol  DC   Segment
+   server-1  192.168.51.177:8301  alive   server  1.9.4  2         dc1  <all>
+   server-2  192.168.51.146:8301  alive   server  1.9.4  2         dc1  <all>
+   server-3  192.168.51.133:8301  alive   server  1.9.4  2         dc1  <all>
+   client-1  192.168.51.104:8301  alive   client  1.9.4  2         dc1  <default>
+   ```
+
+   
+
+8. 启动product service
+
+9. 启动product后, 启动order service
+
+10. 在web可以查看节点: http://192.168.51.177:8500/ui/dc1/nodes, 其它服务器也是完全一样的内容
+
+11. client里面有2个service, product和order
+
+12. 关闭consule 
+
+    `consul leave`
+
+### 报错
+
+端口没有开启报错, 可以关闭防火墙
+
+报错`Error leaving: Put "http://127.0.0.1:8500/v1/agent/leave": dial tcp 127.0.0.1:8500: connect: connection refused`
+
+### Consul常见问题
+
+#### 节点和服务注销
+
+Consul不会自动剔除失效的服务或节点, 但我们可以使用http api的方式处理
+
+#### 健康检查及故障转移
+
+在集群环境下，健康检查是由服务注册到的Agent来处理的，那么如果这个Agent挂掉了，那么此节点
+的健康检查就处于无人管理的状态。
+
+从实际应用看，节点上的服务可能既要被发现，又要发现别的服务，如果节点挂掉了，仅提供被发现的
+功能实际上服务还是不可用的。当然发现别的服务也可以不使用本机节点，可以通过访问一个Nginx实
+现的若干Consul节点的负载均衡来实现。  
 
 
