@@ -22,19 +22,34 @@ Emulating microservices by creating 2 Spring boot web apps and use RestTemplate 
 - 17-eureka：将服务注册到注册中心
 - 18-eureka：eureka中通过元数据获取微服务的调用路径
 
-## EurekaServer的高可用
+### spring_cloud_demo03
 
-​	add these in hosts
+EurekaServer的高可用
+
+对应的视频: 
+
+- 19-eureka：高可用的引入
+- 20-eurekaServer高可用：server间的相互注册
+- ...
+- 27-eurekaserver源码：client的启动流程
+
+### spring_cloud_demo04
+
+ribbon
+
+对应的视频: 28 - 33
+
+
+
+add these in hosts
 
 ```
 # for local coding projects
 127.0.0.1 peer-1-server.com
 127.0.0.1 peer-2-server.com
 127.0.0.1 peer-3-server.com
+== <=
 ```
-
-
-
 1. 准备2个EurekaServer, 需要相互注册
    1. 详见`day1/spring_cloud_demo03/eureka_server/src/main/resources/application.yml`
    2. 注册后, 它们也会互相同步注册信息
