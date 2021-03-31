@@ -1,5 +1,5 @@
 server:
-  port: 9001
+  port: ${spring.profiles}
 spring:
   application:
     name: service-product
@@ -21,3 +21,11 @@ eureka:
       defaultZone: http://localhost:9000/eureka
     instance:
       prefer-ip-address: true # 使用ip地址注册
+
+---
+spring:
+  profiles: 9001
+---
+spring:
+  profiles: 9011
+
