@@ -1,6 +1,7 @@
 package cn.itcast.order.controller;
 
 import cn.itcast.order.entity.Product;
+import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
 import org.springframework.cloud.client.discovery.DiscoveryClient;
@@ -25,10 +26,11 @@ public class OrderController{
 
 
     /**
-     * 通过订单系统
-     * 根据product id 查询product
-     * @param id product id
+     * 使用注解配置熔点保护
+     * @param id
+     * @return
      */
+    @HystrixCommand(fallbackMethod = "orderFallback")
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
         // 调用discoveryClient方法
@@ -40,6 +42,16 @@ public class OrderController{
         //根据元数据中的主机地址和端口号拼接请求
         String url = "http://" + instance.getHost() + ":" + instance.getPort() + "/product/" + id;
         Product product = restTemplate.getForObject(url, Product.class);
+        return product;
+    }
+
+    /**
+     * 降级方法
+     * 和需要受到保护的方法的接口参数, 返回值一致
+     */
+    public Product orderFallback(Long id){
+        Product product = new Product();
+        product.setProductName("触发降级方法");
         return product;
     }
 }
