@@ -107,6 +107,8 @@ logging:
 
 ![](https://img.raiden.live/images/2021/04/01/1569491525364.png)
 
+# Hystrix
+
 ### 项目: spring_cloud_demo_06_hystrix_demo part1
 
 注意: part1中的order中只改动了order_service, 其它的order, 如`order_service_rest`和`order_service_feign`, 会在之后的部分使用
@@ -172,3 +174,49 @@ logging:
 ### 服务限流
 
 简单粗暴, 到达阈值就限制
+
+## 对SpringTemplate的支持
+
+### 项目: `spring_cloud_demo_06_hystrix_demo`里的`order_service_rest`
+
+### 实现步骤
+
+1. 引入hystrix依赖`spring-cloud-starter-netflix-hystrix`
+
+2. 在启动类中激活hystrix
+
+   ```
+   @EnableCircuitBreaker
+   ```
+
+3. 配置熔断触发的降级逻辑
+
+   1. 添加降级方法`cn.itcast.order.controller.OrderController#orderFallback`
+
+      1. 注意返回值和受到保护的方法的请求参数和返回值是一致的
+
+      ```java
+          public Product orderFallback(Long id){
+              Product product = new Product();
+              product.setProductName("触发降级方法");
+              return product;
+          }
+      ```
+
+   2. 将此方法配置在被保护的接口上配置`@HystrixCommand(fallbackMethod = "orderFallback")`
+
+      ```java
+      	@HystrixCommand(fallbackMethod = "orderFallback")
+          @GetMapping("buy/{id}")
+          public Product findProductById(@PathVariable Long id){
+              return restTemplate.getForObject("http://localhost:9001/product/1", Product.class);
+          }
+      ```
+
+      
+
+4. 在需要保护的接口上使用@HystrixCommand配置
+
+5. 正常调用order_service_rest, 2s后返回正常结果
+
+6. 关闭product_service, 再调用, 3s后返回fallback结果
