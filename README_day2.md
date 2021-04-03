@@ -11,6 +11,12 @@ Netflix开发的声明式, 模板化的http客户端
 
 ### 项目: spring_cloud_demo_06_hello_feign
 
+#### 对应视频:
+
+02-feign：概述以及入门案例的搭建-上 
+
+到 06-feign：打印fegin日志
+
 Feign组件入门
 
 1. 导入依赖
@@ -101,3 +107,4 @@ logging:
 
 ![](https://img.raiden.live/images/2021/04/01/1569491525364.png)
 
+### 项目: 
