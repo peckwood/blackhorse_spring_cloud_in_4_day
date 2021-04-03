@@ -1,15 +1,23 @@
 package cn.itcast.order.controller;
 
 import cn.itcast.order.entity.Product;
+import com.netflix.hystrix.contrib.javanica.annotation.DefaultProperties;
 import com.netflix.hystrix.contrib.javanica.annotation.HystrixCommand;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cloud.client.ServiceInstance;
-import org.springframework.cloud.client.discovery.DiscoveryClient;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.List;
-
+/**
+ * @DefaultProperties 指定此接口中公共的熔断设置
+ * 如果在@DefaultProperties中指定了公共的降级方法
+ * 在@HystrixCommand不需要单独指定了
+ *
+ * 注意如果使用统一的公共的降级方法, 类中的接口的返回的对象类型应保持一致(在本例中都是Product)
+ */
+@DefaultProperties(defaultFallback = "defaultFallback")
 @RestController
 @RequestMapping("order")
 public class OrderController{
@@ -17,31 +25,25 @@ public class OrderController{
     private RestTemplate restTemplate;
 
     /**
-     * 注入DiscoveryClient:
-     * springcloud提供的获取原数据的工具类
-     * 调用方法获取服务的元数据信息
-     */
-    @Autowired
-    private DiscoveryClient discoveryClient;
-
-
-    /**
      * 使用注解配置熔点保护
      * @param id
      * @return
      */
-    @HystrixCommand(fallbackMethod = "orderFallback")
+    // @HystrixCommand(fallbackMethod = "orderFallback")
+    @HystrixCommand
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
-        // 调用discoveryClient方法
-        //以调用服务名称获取所有的元数据
-        List<ServiceInstance> instances = discoveryClient.getInstances("service-product");
+        return restTemplate.getForObject("http://localhost:9001/product/1", Product.class);
+    }
 
-        //获取唯一的一个元数据
-        ServiceInstance instance = instances.get(0);
-        //根据元数据中的主机地址和端口号拼接请求
-        String url = "http://" + instance.getHost() + ":" + instance.getPort() + "/product/" + id;
-        Product product = restTemplate.getForObject(url, Product.class);
+    /**
+     * 指定统一的降级方法
+     * 不能有接收参数
+     * @return
+     */
+    public Product defaultFallback(){
+        Product product = new Product();
+        product.setProductName("触发统一降级方法");
         return product;
     }
 
