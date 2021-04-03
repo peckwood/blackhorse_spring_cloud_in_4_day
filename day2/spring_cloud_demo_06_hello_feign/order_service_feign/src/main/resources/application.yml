@@ -14,6 +14,7 @@ spring:
     open-in-view: true
   main:
     banner-mode: "off"
+    allow-bean-definition-overriding: true
 #配置eureka
 eureka:
   client:
@@ -34,3 +35,4 @@ feign:
 logging:
   level:
     cn.itcast.order.feign.ProductFeignClient: debug
+    
