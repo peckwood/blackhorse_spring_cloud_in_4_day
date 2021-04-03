@@ -220,3 +220,43 @@ logging:
 5. 正常调用order_service_rest, 2s后返回正常结果
 
 6. 关闭product_service, 再调用, 3s后返回fallback结果
+
+## 对Feign的支持
+
+### 项目: `spring_cloud_demo_06_hystrix_demo`里的`order_service_feign`
+
+### 实现步骤
+
+1. 引入依赖(feign已经集成了Hystrix)
+
+2. 在Feign中配置开启Hystrix
+
+   ```yaml
+   feign:
+     hystrix:
+       enabled: true # 开启对Hystrix的支持
+   ```
+
+3. 手动自定义一个接口的实现类, 这个实现类就是熔断触发的降级逻辑
+
+   ```java
+   @Component
+   public class ProductFeignClientCallback implements ProductFeignClient{
+       @Override
+       public Product findById(Long id){
+           Product product = new Product();
+           product.setProductName("feign调用出发熔断降级");
+           return product;
+       }
+   }
+   ```
+
+4. 修改FeignClient接口添加降级方法的支持
+
+   ```java
+   @FeignClient(name = "service-product", fallback = ProductFeignClientCallback.class)
+   public interface ProductFeignClient{
+   ```
+
+### 
+
