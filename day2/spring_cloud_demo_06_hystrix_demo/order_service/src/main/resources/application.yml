@@ -1,5 +1,7 @@
 server:
   port: 9002
+  tomcat:
+    max-threads: 10 # 设置最大并发线程数
 spring:
   application:
     name: service-order

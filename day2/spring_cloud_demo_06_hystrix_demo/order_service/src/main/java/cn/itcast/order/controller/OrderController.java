@@ -42,4 +42,9 @@ public class OrderController{
         Product product = restTemplate.getForObject(url, Product.class);
         return product;
     }
+
+    @GetMapping("/{id}")
+    public String findById(@PathVariable Long id){
+        return "根据ID查询订单";
+    }
 }
