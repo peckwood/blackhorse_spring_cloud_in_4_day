@@ -1,5 +1,6 @@
 package cn.itcast.order.controller;
 
+import cn.itcast.order.command.OrderCommand;
 import cn.itcast.order.entity.Product;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cloud.client.ServiceInstance;
@@ -23,24 +24,14 @@ public class OrderController{
     @Autowired
     private DiscoveryClient discoveryClient;
 
-
     /**
-     * 通过订单系统
-     * 根据product id 查询product
-     * @param id product id
+     * 使用OrderCommand调用远程服务
+     * @param id
+     * @return
      */
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
-        // 调用discoveryClient方法
-        //以调用服务名称获取所有的元数据
-        List<ServiceInstance> instances = discoveryClient.getInstances("service-product");
-
-        //获取唯一的一个元数据
-        ServiceInstance instance = instances.get(0);
-        //根据元数据中的主机地址和端口号拼接请求
-        String url = "http://" + instance.getHost() + ":" + instance.getPort() + "/product/" + id;
-        Product product = restTemplate.getForObject(url, Product.class);
-        return product;
+        return new OrderCommand(restTemplate, id).execute();
     }
 
     @GetMapping("/{id}")
