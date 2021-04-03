@@ -31,6 +31,17 @@ feign:
 #        HEADERS 在BASIC的基础上, 记录请求和响应头
 #        FULL 记录所有
         loggerLevel: FULL
+        connectTimeout: 3000
+        readTimeout: 3000
+  hystrix:
+    enabled: true # 开启对Hystrix的支持
 logging:
   level:
     cn.itcast.order.feign.ProductFeignClient: debug
+hystrix:
+  command:
+    default:
+      execution:
+        isolation:
+          thread:
+            timeoutInMilliseconds: 3000 #连接超时时间, 默认为1000ms

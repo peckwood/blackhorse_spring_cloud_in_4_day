@@ -8,8 +8,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * 声明需要调用的微服务名称, "service-product"为product的spring.application.name
+ * fallback: 熔断降级发生的降级方法的实现类
  */
-@FeignClient(name = "service-product")
+@FeignClient(name = "service-product", fallback = ProductFeignClientCallback.class)
 public interface ProductFeignClient{
     /**
      * 配置需要调用的微服务接口
