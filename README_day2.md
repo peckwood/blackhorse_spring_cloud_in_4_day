@@ -296,5 +296,10 @@ logging:
 
 4. 在<u>web浏览器</u>上访问`http://localhost:9003/actuator/hystrix.stream`
 
+## 搭建Hystrix Dashboard监控
 
+1. 引入坐标
+   1. 坐标和`hystrix设置监控信息`的相同`
+2. 在启动类上添加`@EnableHystrixDashboard`注解
+3. 在浏览器访问http://localhost:9003/hystrix, 并输入hystrix.stream url `http://localhost:9003/actuator/hystrix.stream`
 
