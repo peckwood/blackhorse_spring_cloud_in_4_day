@@ -29,10 +29,13 @@ public class OrderController{
      * @param id
      * @return
      */
-    // @HystrixCommand(fallbackMethod = "orderFallback")
-    @HystrixCommand
+    @HystrixCommand(fallbackMethod = "orderFallback")
+    // @HystrixCommand
     @GetMapping("buy/{id}")
     public Product findProductById(@PathVariable Long id){
+        if(id != 1){
+            throw new RuntimeException("服务器异常");
+        }
         return restTemplate.getForObject("http://localhost:9001/product/1", Product.class);
     }
 

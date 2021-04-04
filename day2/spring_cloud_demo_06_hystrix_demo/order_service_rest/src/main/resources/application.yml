@@ -21,6 +21,12 @@ eureka:
       defaultZone: http://localhost:9000/eureka
     instance:
       prefer-ip-address: true # 使用ip地址注册
+# 暴露hystrix.stream端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
 hystrix:
   command:
     default:
@@ -28,3 +34,7 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 3000 #连接超时时间, 默认为1000ms
+      circuitBreaker:
+        requestVolumeThreshold: 20 #触发熔断的最小请求次数，默认20
+        sleepWindowInMilliseconds: 10000 #熔断多少秒后去尝试请求
+        errorThresholdPercentage: 50 #触发熔断的失败请求最小占比，默认50%

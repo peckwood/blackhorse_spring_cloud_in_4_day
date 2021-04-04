@@ -367,3 +367,44 @@ Turbine是一个聚合Hystrix 监控数据的工具, 可以把多个微服务的
 
 7. 在里面填写`http://localhost:8031/turbine.stream`
 
+hystrix可以对请求失败的, 以及被拒绝的, 或潮湿的请求进行统一的降级处理
+
+## 断路器
+
+![](https://img.raiden.live/images/2021/04/04/1569549811943.png)
+
+### 项目: spring_cloud_demo_06_hystrix_demo 测试断路器的工作状态
+
+环境准备:
+
+1. 注意这次使用的order service不用feign, 用rest, 因为feign自己有对异常的处理
+
+2. 注释掉product_service里的ProductController内的findById的手动2s延时
+
+3. 在订单系统`cn.itcast.order.controller.OrderController#findProductById`中加入逻辑
+
+   判断请求的id
+
+   ​	如果id=1, 正常执行(正常调用商品微服务)
+
+   ​	如果id=2, 抛出异常(不调用商品微服务)
+
+4. 默认hystrix有触发断路器状态转化的阈值
+
+   1. 修改配置文件`src/main/resources/application.yml`
+   2. 出发熔断的最小请求次数: 20
+   3. 触发熔断的请求失败的比率: 50%
+   4. 断路器开启的时长: 5s
+
+5. 打开dashboard http://localhost:8031/hystrix/monitor
+
+6. 请求http://localhost:9004/order/buy/1, 正常返回
+
+7. 请求http://localhost:9004/order/buy/2, 返回降级结果
+
+8. 多次刷新http://localhost:9004/order/buy/2, circuit状态由closed变为open
+
+9. 请求http://localhost:9004/order/buy/1, 也返回降级结果
+
+10. 等5s, http://localhost:9004/order/buy/1, 正常返回, circuit状态由open变为closed
+
