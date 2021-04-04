@@ -258,5 +258,43 @@ logging:
    public interface ProductFeignClient{
    ```
 
-### 
+## hystrix设置监控信息
+
+1. 引入坐标
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.boot</groupId>
+       <artifactId>spring-boot-starter-actuator</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+   </dependency>
+   ```
+
+2. 在启动类上配置hystrix熔断注解支持
+
+   ```java
+   @EnableCircuitBreaker
+   public class FeignOrderApplication{
+   ```
+
+3. 暴露hystrix.stream端点
+
+   ```yaml
+   management:
+     endpoints:
+       web:
+         exposure:
+           include: hystrix.stream
+   ```
+
+4. 在<u>web浏览器</u>上访问`http://localhost:9003/actuator/hystrix.stream`
+
+
 

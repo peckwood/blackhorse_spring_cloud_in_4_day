@@ -45,3 +45,9 @@ hystrix:
         isolation:
           thread:
             timeoutInMilliseconds: 3000 #连接超时时间, 默认为1000ms
+# 暴露hystrix.stream端点
+management:
+  endpoints:
+    web:
+      exposure:
+        include: hystrix.stream
