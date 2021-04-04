@@ -303,3 +303,67 @@ logging:
 2. 在启动类上添加`@EnableHystrixDashboard`注解
 3. 在浏览器访问http://localhost:9003/hystrix, 并输入hystrix.stream url `http://localhost:9003/actuator/hystrix.stream`
 
+## 断路器聚合监控Turbine
+
+Turbine是一个聚合Hystrix 监控数据的工具, 可以把多个微服务的Hystrix Dashboard数据集中展示
+
+1. 创建module`hystrix_turbine`
+
+2. 引入坐标
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-turbine</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-hystrix</artifactId>
+   </dependency>
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-hystrix-dashboard</artifactId>
+   </dependency>
+   ```
+
+3. 添加配置文件
+
+   ```yaml
+   server:
+     port: 8031
+   spring:
+     application:
+      name: microservice-hystrix-turbine
+   eureka:
+     client:
+       service-url:
+         defaultZone: http://localhost:9000/eureka/
+     instance:
+      prefer-ip-address: true
+   turbine:
+     # 要监控的微服务列表，多个用,分隔, 注意这些微服务要开启对应的hystrix.stream端点
+     appConfig: service-order
+     clusterNameExpression: "'default'"
+   ```
+
+4. 创建配置类并加上对应的注解
+
+   ```java
+   // turbine配置
+   @EnableTurbine
+   // hystrix Dashboard也要开启
+   @EnableHystrixDashboard
+   @SpringBootApplication
+   public class TurbineApplication{
+       public static void main(String[] args){
+           SpringApplication.run(TurbineApplication.class, args);
+       }
+   }
+   ```
+
+5. 启动TurbineApplication
+
+6. 访问http://localhost:8031/hystrix
+
+7. 在里面填写`http://localhost:8031/turbine.stream`
+

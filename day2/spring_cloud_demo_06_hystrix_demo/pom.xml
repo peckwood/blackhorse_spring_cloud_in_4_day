@@ -14,6 +14,7 @@
         <module>order_service</module>
         <module>order_service_feign</module>
         <module>order_service_rest</module>
+        <module>hystrix_turbine</module>
     </modules>
 
     <parent>
