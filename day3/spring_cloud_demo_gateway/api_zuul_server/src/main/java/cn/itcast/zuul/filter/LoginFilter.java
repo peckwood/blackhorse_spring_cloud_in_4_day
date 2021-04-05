@@ -1,10 +1,14 @@
 package cn.itcast.zuul.filter;
 
 import com.netflix.zuul.ZuulFilter;
+import com.netflix.zuul.context.RequestContext;
 import com.netflix.zuul.exception.ZuulException;
 import org.springframework.cloud.netflix.zuul.filters.support.FilterConstants;
 import org.springframework.context.annotation.FilterType;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 自定义的Zuul过滤器
@@ -46,12 +50,29 @@ public class LoginFilter extends ZuulFilter{
 
     /**
      * 指定过滤器中的业务逻辑
+     *  身份认证:
+     *  1. 所有的请求需要携带一个参数access-token
+     *  2. 获取request请求
+     *  3. 通过request获取参数access-token
+     *  4. 判断token是否为空
+     *  5.1 token==null, 拦截请求, 返回认证失败
+     *  5.2 token!=null, 执行后续操作
+     *  在zuul网关中, 通过RequestContext的上下文对象, 可以获取request对象
      * @return
      * @throws ZuulException
      */
     @Override
     public Object run() throws ZuulException{
-        System.out.println("执行了过滤器");
+        RequestContext currentContext = RequestContext.getCurrentContext();
+        HttpServletRequest request = currentContext.getRequest();
+        String token = request.getParameter("access-token");
+        if(token==null){
+            //拦截请求
+            currentContext.setSendZuulResponse(false);
+            //返回401
+            currentContext.setResponseStatusCode(HttpStatus.UNAUTHORIZED.value());
+        }
+        // 执行后续操作
         return null;
     }
 }

@@ -138,5 +138,22 @@ zuul:
 
 ## Zuul中的过滤器
 
+![](https://img.raiden.live/images/2021/04/05/filters.png)
 
+pre: 转发到微服务之前执行的过滤器
 
+routing: 在路由请求时执行的过滤器
+
+post: 执行微服务获取返回值之后执行的过滤器
+
+error: 在整个阶段抛出异常的时候执行的过滤器
+
+### 自定义过滤器
+
+day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filter/LoginFilter.java
+
+### 使用Zuul实现一个简单的身份认证过滤器
+
+![](https://img.raiden.live/images/2021/04/05/7aa4e778848491a53b64b05e3b18c108.png)
+
+实现后, 分别通过带上参数`access-token`和不带进行访问, 发现不带返回401, 带了返回正常结果
