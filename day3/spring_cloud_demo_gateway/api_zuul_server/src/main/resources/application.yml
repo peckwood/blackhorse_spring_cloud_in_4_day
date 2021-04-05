@@ -1,0 +1,13 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-zuul-server
+zuul:
+  routes:
+#    以商品微服务为例
+    product-server: #路由的id, 可以自定义
+      path: /product-service/** #映射路径, 例如: localhost:8080/product-service/abc
+      url: http://127.0.0.1:9001 # 映射路径对应的实际微服务
+      
+#路由配置
