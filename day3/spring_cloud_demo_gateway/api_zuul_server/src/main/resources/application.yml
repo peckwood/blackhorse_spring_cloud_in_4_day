@@ -7,10 +7,11 @@ spring:
 zuul:
   routes:
 #    以商品微服务为例
-    product-server: #路由的id, 可以自定义
-      path: /product-service/** #映射路径, 例如: localhost:8080/product-service/abc
+    service-product: #路由的id, 可以自定义, # 如果路由id 和 对应的微服务的serviceId一致的话, 就不用指定serviceId
+      path: /product-service/** #映射路径
 #      url: service-product # 映射路径对应的实际微服务
-      serviceId: service-product # 配置转发的微服务的服务名称
+#      serviceId: service-product # 配置转发的微服务的服务名称
+
 #配置eureka
 eureka:
   client:
