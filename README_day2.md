@@ -158,12 +158,36 @@ logging:
 
 #### 隔离服务的解决方案
 
-1. 线程池隔离
+1. 线程池隔离策略
    1. 给重要的或可能被大量访问的方法配置一个专有线程池
    2. 比如给下单方法配置一个5个线程的线程池, 给查询订单方法配一个4个的
-2. 信号量隔离
+   3. 优点: 可以应对突发流量
+   4. 
+   
+2. 线程池隔离策略  
    1. 可以理解为计数器
+
    2. 设置请求的方法的最大阈值, 即最多能访问人数, 剩下的人直接返回null
+
+   3. 特点: 无法应对突发流量
+
+      | 功能     | 线程池隔离               | 信号量隔离                |
+      | -------- | ------------------------ | ------------------------- |
+      | 线程     | 与调用线程非相同线程     | 与调用线程相同(jetty线程) |
+      | 开销     | 排队, 调度, 上下文开销等 | 无线程切换, 开销低        |
+      | 异步     | 支持                     | 不支持                    |
+      | 并发支持 | 支持(最大线程池大小)     | 支持(最大信号量上限)      |
+
+配置:
+
+```properties
+hystrix.command.default.execution.isolation.strategy : 配置隔离策略
+ExecutionIsolationStrategy.SEMAPHORE 信号量隔离
+ExecutionIsolationStrategy.THREAD 线程池隔离
+
+hystrix.command.default.execution.isolation.maxConcurrentRequests : 最大信号量上
+限
+```
 
 ### 熔断降级
 
@@ -408,3 +432,6 @@ hystrix可以对请求失败的, 以及被拒绝的, 或潮湿的请求进行统
 
 10. 等5s, http://localhost:9004/order/buy/1, 正常返回, circuit状态由open变为closed
 
+## Hystrix执行过程
+
+![](https://img.raiden.live/images/2021/04/05/hystrix.jpg)
