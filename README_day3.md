@@ -134,7 +134,9 @@ zuul:
 ### 简化路由配置
 
 1. 如果路由id 和 对应的微服务的serviceId一致的话, 可以略去对应serviceId的配置
-2. 如果不指定path, 默认的path为`/服务名/**`, 如order-service的可以通过`localhost:8080/product-service/product/1`来访问
+2. 如果不指定path, 默认的path为`/服务名/**`, 如order-service的可以通过`localhost:8080/service-order/order/buy/1`来访问, 虽然Zuul内没有给`service-order`配置路由id
+
+## Zuul中的过滤器
 
 
 
