@@ -157,3 +157,71 @@ day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filt
 ![](https://img.raiden.live/images/2021/04/05/7aa4e778848491a53b64b05e3b18c108.png)
 
 实现后, 分别通过带上参数`access-token`和不带进行访问, 发现不带返回401, 带了返回正常结果
+
+### Zuul的缺陷
+
+- 性能问题
+
+  Zuul1x版本本质上就是一个同步Servlet，采用多线程阻塞模型进行请求转发。简单讲，每来
+  一个请求，Servlet容器要为该请求分配一个线程专门负责处理这个请求，直到响应返回客户
+  端这个线程才会被释放返回容器线程池。如果后台服务调用比较耗时，那么这个线程就会被
+  阻塞，阻塞期间线程资源被占用，不能干其它事情。我们知道Servlet容器线程池的大小是有
+  限制的，当前端请求量大，而后台慢服务比较多时，很容易耗尽容器线程池内的线程，造成
+  容器无法接受新的请求。
+
+- 不支持任何长连接，如websocket  
+
+# Spring Cloud Gateway
+
+## 路由配置
+
+### 搭建环境
+
+1. 创建工程, 导入坐标
+
+   ```xml
+   <!--spring cloud gateway内部是通过netty + webflux实现-->
+   <!--webflux和springmvc存在冲突-->
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-gateway</artifactId>
+   </dependency>
+   ```
+
+2. 配置启动类
+
+   ```java
+   @SpringBootApplication
+   public class GatewayServerApplication{
+       public static void main(String[] args){
+           SpringApplication.run(GatewayServerApplication.class, args);
+       }
+   }
+   ```
+
+3. 编写配置文件
+
+   ```yaml
+   spring:
+     cloud:
+       #配置Spring Cloud Gateway的路由
+       gateway:
+         routes:
+           #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+           - id: product-service
+             uri: http://127.0.0.1:9001
+             predicates:
+               # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, 必须是product
+               - Path=/product/**
+   ```
+
+   
+
+## 过滤器
+
+## 统一鉴权
+
+## 网关限流
+
+## 网关的高可用
+

@@ -1,0 +1,15 @@
+server:
+  port: 8080
+spring:
+  application:
+    name: api-gateway-server
+  cloud:
+    #配置Spring Cloud Gateway的路由
+    gateway:
+      routes:
+        #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+        - id: product-service # 保持唯一即可
+          uri: http://127.0.0.1:9001 # 目标微服务请求地址
+          predicates:
+            # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, 必须是product
+            - Path=/product/** #转发路由条件 Path: 路径匹配条件

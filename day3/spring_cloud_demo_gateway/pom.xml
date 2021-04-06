@@ -13,6 +13,7 @@
         <module>eureka_server</module>
         <module>order_service_feign</module>
         <module>api_zuul_server</module>
+        <module>api_gateway_server</module>
     </modules>
 
     <parent>
@@ -30,10 +31,6 @@
     </properties>
 
     <dependencies>
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
-        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-logging</artifactId>
