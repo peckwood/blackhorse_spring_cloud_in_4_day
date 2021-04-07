@@ -215,6 +215,8 @@ day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filt
                - Path=/product/**
    ```
 
+`http://127.0.0.1:9001` + `/product/**`
+
 ### 路由规则
 
 断言: 路由条件
@@ -242,9 +244,42 @@ day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filt
            - id: product-service # 保持唯一即可
              # uri: http://127.0.0.1:9001 # 目标微服务请求地址
              uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
+             predicates:
+            # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, Path里面必须是product
+               - Path=/product/** #转发路由条件 Path: 路径匹配条件
    ```
 
-   
+动态路由的限制: 只能用被访问的微服务内定义的路径, 比如product就必须是`/product/**`, 不能用`product-service/product/**`
+
+1. 他是
+
+### 路径重写
+
+可以用路径重写的方式, 实现`product-service/product/**`
+
+通过路由过滤器, 按照配置的正则的规则, 将`product-service`去掉
+
+```yaml
+spring:
+  cloud:
+    #配置Spring Cloud Gateway的路由
+    gateway:
+      routes:
+        #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+        - id: product-service # 保持唯一即可
+#          uri: http://127.0.0.1:9001 # 目标微服务请求地址
+          uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
+          predicates:
+            # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, Path里面必须是product
+#            - Path=/product/** #转发路由条件 Path: 路径匹配条件
+            # 上一种方式不允许自定义路径, 如果要实现自定义路径, 如localhost:8080/product-service/product/:id
+            # 需要重写转发路径
+            - Path=/product-service/**
+          filters: #配置路由过滤器
+            - RewritePath=/product-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+```
+
+try with `localhost:8080/product-service/product/1`
 
 ## 过滤器
 
