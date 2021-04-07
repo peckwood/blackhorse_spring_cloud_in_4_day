@@ -9,7 +9,15 @@ spring:
       routes:
         #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
         - id: product-service # 保持唯一即可
-          uri: http://127.0.0.1:9001 # 目标微服务请求地址
+#          uri: http://127.0.0.1:9001 # 目标微服务请求地址
+          uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
           predicates:
             # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, 必须是product
             - Path=/product/** #转发路由条件 Path: 路径匹配条件
+# eureka注册中心
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:9000/eureka
+    instance:
+      prefer-ip-address: true # 使用ip地址注册

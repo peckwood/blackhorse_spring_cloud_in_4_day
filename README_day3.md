@@ -215,6 +215,35 @@ day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filt
                - Path=/product/**
    ```
 
+### 路由规则
+
+断言: 路由条件
+
+### 动态路由(面向服务的路由)
+
+1. pom添加eureka client依赖
+
+   ```xml
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+   </dependency>
+   ```
+
+2. 在`application.xml`内修改路径方式
+
+   ```yaml
+   spring:
+     cloud:
+       #配置Spring Cloud Gateway的路由
+       gateway:
+         routes:
+           #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+           - id: product-service # 保持唯一即可
+             # uri: http://127.0.0.1:9001 # 目标微服务请求地址
+             uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
+   ```
+
    
 
 ## 过滤器
