@@ -297,6 +297,30 @@ try with `localhost:8080/service-product/product/1` and `localhost:8080/service-
 
 ## 过滤器
 
+### 过滤器基础
+
+#### 过滤器的生命周期
+
+- pre 请求被路由调用前执行, 可以用来实现身份验证, 集群中选择请求的微服务, 记录调试信息
+- post 调用微服务后执行, 可以用来为响应添加标准的HTTP header等
+
+#### 过滤器类型
+
+- GatewayFilter 应用到单个路由, 或者一个分组的路由上
+- GlobalFilter 应用到所有的路由上
+
+#### 局部过滤器
+
+每个过滤器工厂都对应一个实现类，并且这些类的名称必须以 GatewayFilterFactory 结尾，这是
+Spring Cloud Gateway的一个约定，例如 AddRequestHeader 对应的实现类为
+AddRequestHeaderGatewayFilterFactory 。对于这些过滤器的使用方式可以参考官方文档  
+
+### 全局过滤器
+
+Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自己的GlobalFilter.
+
+可以实现对权限的统一校验, 安全性验证
+
 ## 统一鉴权
 
 ## 网关限流
