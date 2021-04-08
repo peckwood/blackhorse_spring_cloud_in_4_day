@@ -6,19 +6,24 @@ spring:
   cloud:
     #配置Spring Cloud Gateway的路由
     gateway:
-      routes:
-        #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
-        - id: product-service # 保持唯一即可
-#          uri: http://127.0.0.1:9001 # 目标微服务请求地址
-          uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
-          predicates:
-            # 注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, Path里面必须是product
-#            - Path=/product/** #转发路由条件 Path: 路径匹配条件
-            # 上一种方式不允许自定义路径, 如果要实现自定义路径, 如localhost:8080/product-service/product/:id
-            # 需要重写转发路径
-            - Path=/product-service/**
-          filters: #配置路由过滤器
-            - RewritePath=/product-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+#      routes:
+#      配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+#      - id: product-service # 保持唯一即可
+#        uri: http://127.0.0.1:9001 # 目标微服务请求地址
+#        uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
+#        predicates:
+#        注意与zuul不同, Path里的内容会全部被append到uri的后面, 所以不能随便写, Path里面必须是product
+#         - Path=/product/** #转发路由条件 Path: 路径匹配条件
+#        上一种方式不允许自定义路径, 如果要实现自定义路径, 如localhost:8080/product-service/product/:id
+#        需要重写转发路径
+#          - Path=/product-service/**
+#        filters: #配置路由过滤器
+#          - RewritePath=/product-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+#        配置自动的根据微服务名称进行路由转发
+      discovery:
+        locator:
+          enabled: true #开启
+          lower-case-service-id: true #小写
 # eureka注册中心
 eureka:
   client:

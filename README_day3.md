@@ -281,6 +281,20 @@ spring:
 
 try with `localhost:8080/product-service/product/1`
 
+### 根据微服务名称转发
+
+```yaml
+spring:
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true #开启
+          lower-case-service-id: true #小写
+```
+
+try with `localhost:8080/service-product/product/1` and `localhost:8080/service-order/order/buy/1`
+
 ## 过滤器
 
 ## 统一鉴权
