@@ -323,6 +323,30 @@ Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自�
 
 ## 统一鉴权
 
+```java
+    @Override
+    public Mono<Void> filter(ServerWebExchange exchange, GatewayFilterChain chain){
+        System.out.println("执行了自定义的全局过滤器");
+        String token = exchange.getRequest().getQueryParams().getFirst("access-token");
+        if (StringUtils.hasText(token)) {
+            // 继续向下执行
+            return chain.filter(exchange);
+        }else{
+            System.out.println("没有登陆");
+            exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
+            return exchange.getResponse().setComplete();
+        }
+    }
+```
+
+- 自定义全局过滤器需要实现GlobalFilter和Ordered接口。
+- 在filter方法中完成过滤器的逻辑判断处理
+- 在getOrder方法指定此过滤器的优先级，返回值越大级别越低
+- ServerWebExchange 就相当于当前请求和响应的上下文，存放着重要的请求-响应属性、请求实
+  例和响应实例等等。一个请求中的request，response都可以通过 ServerWebExchange 获取
+  调用 
+- chain.filter 继续向下游执行  
+
 ## 网关限流
 
 ## 网关的高可用
