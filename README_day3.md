@@ -175,7 +175,9 @@ day3/spring_cloud_demo_gateway/api_zuul_server/src/main/java/cn/itcast/zuul/filt
 
 ## 路由配置
 
-### 搭建环境
+### 项目: spring_cloud_demo_gateway
+
+#### 搭建环境
 
 1. 创建工程, 导入坐标
 
@@ -348,6 +350,33 @@ Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自�
 - chain.filter 继续向下游执行  
 
 ## 网关限流
+
+### 基于filter的限流
+
+1. 准备工作
+
+   1. redis
+
+   2. 工程中引入redis依赖: 基于reative的redis依赖
+
+      ```xml
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-actuator</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-data-redis-reactive</artifactId>
+      </dependency>
+      ```
+
+      
+
+2. 修改网关中的application.yml
+
+3. 配置redis中key的解析器KeyResolver
+
+### 基于Sentinal的限流
 
 ## 网关的高可用
 
