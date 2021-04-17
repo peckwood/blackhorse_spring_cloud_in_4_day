@@ -370,8 +370,6 @@ Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自�
       </dependency>
       ```
 
-      
-
 2. 修改网关中的application.yml
 
 3. 配置redis中key的解析器KeyResolver
