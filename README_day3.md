@@ -357,6 +357,9 @@ Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自�
 
    1. redis
 
+      1. 启动redis server
+      2. 启动redis client, 输入`monitor`监控redis内的数据变化
+
    2. 工程中引入redis依赖: 基于reative的redis依赖
 
       ```xml
@@ -370,9 +373,67 @@ Spring Cloud Gateway定义了GlobalFilter接口, 用户可以自定义实现自�
       </dependency>
       ```
 
-2. 修改网关中的application.yml
+2. 请求方式: localhost:8080/service-product/product/1?access-token=1
 
-3. 配置redis中key的解析器KeyResolver
+3. 修改网关中的application.yml
+
+   ```yaml
+   spring:
+     application:
+       name: api-gateway-server
+     redis:
+       host: localhost
+       pool: 6379
+       database: 0
+     cloud:
+       #配置Spring Cloud Gateway的路由
+       gateway:
+         routes:
+           #配置路由: 路由id, 路由到微服务的uri, 断言(判断条件)
+           - id: product-service # 保持唯一即可
+             # uri: http://127.0.0.1:9001 # 目标微服务请求地址
+             uri: lb://service-product # 根据微服务名称从注册中心中拉取服务请求路径
+             predicates:
+               # 需要重写转发路径
+               - Path=/product-service/**
+             filters: #配置路由过滤器
+               # 使用限流过滤器, 是Spring Cloud Gateway提供的
+               - name: RequestRateLimiter
+                 args:
+                   # 使用SpEL从容器中获取对象
+                   # 指定为限流的标准
+                   key-resolver: '#{@pathKeyResolver}'
+                   # 参数 replenishRate: 向令牌桶中填充的速率
+                   redis-rate-limiter.replenishRate: 1
+                   # burstCapacity: 令牌桶的容量
+                   redis-rate-limiter.burstCapacity: 3
+               - RewritePath=/product-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+   ```
+
+4. 配置redis中key的解析器KeyResolver
+
+```java
+@Bean
+public KeyResolver pathKeyResolver(){
+    //自定义的KeyResolver
+    return new KeyResolver(){
+        /**
+         *
+         * @param exchange 上下文参数
+         * @return
+         */
+        @Override
+        public Mono<String> resolve(ServerWebExchange exchange){
+            //通过路径限流
+            // return Mono.just(exchange.getRequest().getPath().toString());
+            // 基于请求ip的限流
+            return Mono.just(exchange.getRequest().getHeaders().getFirst("X-Forwarded-For"));
+        }
+    };
+}
+```
+
+
 
 ### 基于Sentinal的限流
 

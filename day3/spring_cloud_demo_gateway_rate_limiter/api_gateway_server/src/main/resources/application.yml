@@ -3,6 +3,10 @@ server:
 spring:
   application:
     name: api-gateway-server
+  redis:
+    host: localhost
+    pool: 6379
+    database: 0
   cloud:
     #配置Spring Cloud Gateway的路由
     gateway:
@@ -15,7 +19,19 @@ spring:
             # 需要重写转发路径
             - Path=/product-service/**
           filters: #配置路由过滤器
+            # 使用限流过滤器, 是Spring Cloud Gateway提供的
+            - name: RequestRateLimiter
+              args:
+                # 使用SpEL从容器中获取对象
+                # 指定为限流的标准
+                key-resolver: '#{@pathKeyResolver}'
+#                key-resolver: '#{@userKeyResolver}'
+                # 参数 replenishRate: 向令牌桶中填充的速率
+                redis-rate-limiter.replenishRate: 1
+                # burstCapacity: 令牌桶的容量
+                redis-rate-limiter.burstCapacity: 3
             - RewritePath=/product-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+
 # eureka注册中心
 eureka:
   client:
