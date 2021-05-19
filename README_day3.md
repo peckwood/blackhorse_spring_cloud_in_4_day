@@ -437,7 +437,7 @@ public KeyResolver pathKeyResolver(){
 
 ### 基于Sentinal的限流
 
-## 网关的高可用
+### 网关的高可用
 
 1. 安装nginx for windows `http://nginx.org/en/download.html`
 
@@ -468,3 +468,21 @@ public KeyResolver pathKeyResolver(){
 4. create two GatewayServerApplication configuration, one at 8083, one at 8084.
 
 5. as long as one GatewayServerApplication is running, your requests to `http://localhost/product-service/product/1` will be handled
+
+### 分布式链路追踪
+
+Distrubuted Tracing
+
+分布式链路追踪（Distributed Tracing），就是将一次分布式请求还原成调用链路，进行
+
+- 日志记录
+- 性能监控
+- 将一次分布式请求的调用情况集中展示。比如各个服务节点上的耗时、请求具体到达哪台机器
+  上、每个服务节点的请求状态等等  
+
+我们会学习Sleuth结合twitter的Zipkin的解决方案
+
+Sleuth主要功能是在分布式系统中提供追踪解决方案
+
+![](https://img.raiden.live/images/2021/05/19/a7ba2c64f5ffdb38c9d0205d443c8b28.png)
+
