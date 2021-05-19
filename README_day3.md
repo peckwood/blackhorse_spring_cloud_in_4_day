@@ -439,3 +439,32 @@ public KeyResolver pathKeyResolver(){
 
 ## 网关的高可用
 
+1. 安装nginx for windows `http://nginx.org/en/download.html`
+
+2. edit conf/nginx.conf
+
+   ```
+       #集群配置
+       upstream gateway{
+           server 127.0.0.1:8083;
+           server 127.0.0.1:8084;
+       }
+   
+       server {
+           listen       80;
+           server_name  localhost;
+   
+           # 127.0.0.1
+           location / {
+               proxy_pass http://gateway;
+           }
+        }
+   ```
+   
+   
+   
+3. start nginx with `start nginx` in executable folder
+
+4. create two GatewayServerApplication configuration, one at 8083, one at 8084.
+
+5. as long as one GatewayServerApplication is running, your requests to `http://localhost/product-service/product/1` will be handled
