@@ -437,7 +437,7 @@ public KeyResolver pathKeyResolver(){
 
 ### 基于Sentinal的限流
 
-### 网关的高可用
+## 网关的高可用
 
 1. 安装nginx for windows `http://nginx.org/en/download.html`
 
@@ -469,7 +469,7 @@ public KeyResolver pathKeyResolver(){
 
 5. as long as one GatewayServerApplication is running, your requests to `http://localhost/product-service/product/1` will be handled
 
-### 分布式链路追踪
+## 分布式链路追踪
 
 Distrubuted Tracing
 
@@ -485,4 +485,45 @@ Distrubuted Tracing
 Sleuth主要功能是在分布式系统中提供追踪解决方案
 
 ![](https://img.raiden.live/images/2021/05/19/a7ba2c64f5ffdb38c9d0205d443c8b28.png)
+
+1. `47dc85c 2021-05-19 23:47 raiden (HEAD -> master) [spring_cloud_tracking_analysis] 搭建基础项目: gateway访问order, order访问product.`
+
+2. 在所有要打印日志的微服务中(gateway, order, product)添加sleuth依赖
+
+   ```XML
+   <dependency>
+       <groupId>org.springframework.cloud</groupId>
+       <artifactId>spring-cloud-starter-sleuth</artifactId>
+   </dependency>
+   ```
+   
+3. 给这些微服务的application.yml添加对应的日志配置
+
+   ```yaml
+   logging:
+     level:
+       root: INFO
+       org.springframework.web.servlet.DispatcherServlet: DEBUG
+       org.springframework.cloud.sleuth: DEBUG
+   ```
+   
+4. 通过gateway,发送请求, 可以在3个微服务的日志中看到类似
+
+   ```
+   2021-05-20 19:43:22.194 DEBUG [api-gateway-server,0f6878061326d67e,0f6878061326d67e,false]
+   ```
+    ```
+    2021-05-20 19:43:22.191 DEBUG [service-order,0f6878061326d67e,10914c94b6c30952,false]
+    ```
+    ```
+    2021-05-20 19:43:22.190 DEBUG [service-product,0f6878061326d67e,7d9ca53a3f65c310,false]
+    ```
+
+
+5. 第一个数字(`0f6878061326d67e`)代表追踪的trace id, 第二个代表每一次发起请求对应的span id
+
+查看日志文件并不是一个很好的方法，当微服务越来越多日志文件也会越来越多，通过Zipkin可以将日
+志聚合，并进行可视化展示和全文检索。  
+
+
 
