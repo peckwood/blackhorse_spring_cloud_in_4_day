@@ -19,6 +19,13 @@ spring:
             - Path=/order-service/**
           filters: #配置路由过滤器
             - RewritePath=/order-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+  zipkin:
+    base-url: http://127.0.0.1:9411/ #server的请求路径
+    sender:
+      type: web #数据的传输方式, 以http的方式向server端发送数据
+  sleuth:
+    sampler:
+      probability: 1 #采样比, 默认是0.1, 开发时可以设置为1
 # eureka注册中心
 eureka:
   client:

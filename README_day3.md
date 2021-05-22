@@ -482,6 +482,8 @@ Distrubuted Tracing
 
 我们会学习Sleuth结合twitter的Zipkin的解决方案
 
+### Sleuth 概述
+
 Sleuth主要功能是在分布式系统中提供追踪解决方案
 
 ![](https://img.raiden.live/images/2021/05/19/a7ba2c64f5ffdb38c9d0205d443c8b28.png)
@@ -523,7 +525,59 @@ Sleuth主要功能是在分布式系统中提供追踪解决方案
 5. 第一个数字(`0f6878061326d67e`)代表追踪的trace id, 第二个代表每一次发起请求对应的span id
 
 查看日志文件并不是一个很好的方法，当微服务越来越多日志文件也会越来越多，通过Zipkin可以将日
-志聚合，并进行可视化展示和全文检索。  
+志聚合，并进行可视化展示和全文检索。
 
+### Zipkin
 
+![](https://img.raiden.live/images/2021/05/20/9aEqad1Fxc.png)
 
+上图展示了Zipkin地基础架构, 主要由4个核心组件构成
+
+- Collector. 收集微服务发送过来的跟踪数据, 将这些数据转存到Zipkin内部
+- Storage. 把信息存入到数据库或内存
+- Restful API. 提供外部访问接口
+- Web UI. 浏览器内看
+
+Zipkin 分为两端，一个是 Zipkin 服务端，一个是 Zipkin 客户端，客户端也就是微服务的应用。
+客户端会配置服务端的 URL 地址，一旦发生服务间的调用的时候，会被配置在微服务里面的 Sleuth 的
+监听器监听，并生成相应的 Trace 和 Span 信息发送给服务端。
+发送的方式主要有两种，一种是 HTTP 报文的方式，还有一种是消息总线的方式如 RabbitMQ。
+不论哪种方式，我们都需要：
+一个 Eureka 服务注册中心，这里我们就用之前的 eureka 项目来当注册中心。
+一个 Zipkin 服务端。
+多个微服务，这些微服务中配置Zipkin 客户端。  
+
+#### Zipkin Server的部署和配置  
+
+1. 在Cygwin或linux里, 创建zipkin自己的文件夹, cd进去后运行
+
+```
+curl -sSL https://zipkin.io/quickstart.sh | bash -s
+java -jar zipkin.jar
+```
+
+如果端口被占用了, 所有方法都不行, 试试重启.
+
+2. 给每个微服务配置好zipkin客户端
+
+   1. 给gateway, order, product微服务都加上zipkin依赖
+   2. 给它们3个的配置文件application.yml都加上zipkin配置
+
+       ```yaml
+       spring:
+         zipkin:
+           base-url: http://127.0.0.1:9411/ #server的请求路径
+           sender:
+             type: web #数据的传输方式, 以http的方式向server端发送数据
+         sleuth:
+           sampler:
+             probability: 1 #采样比, 默认是0.1, 开发时可以设置为1
+       ```
+
+   
+
+3. 访问http://localhost:9411/zipkin 查看链路信息, 如微服务调用关系, 请求方式, 请求时间等
+
+> https://zipkin.io/pages/quickstart
+
+4. ![zipkin存在的问题和解决](https://img.raiden.live/images/2021/05/22/zipkin.png)
