@@ -21,6 +21,18 @@ spring:
   sleuth:
     sampler:
       probability: 1 #采样比, 默认是0.1, 开发时可以设置为1
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener: # 这里配置了重试策略
+      direct:
+        retry:
+          enabled: true
+      simple:
+        retry:
+          enabled: true
 #配置eureka
 eureka:
   client:

@@ -581,3 +581,86 @@ java -jar zipkin.jar
 > https://zipkin.io/pages/quickstart
 
 4. ![zipkin存在的问题和解决](https://img.raiden.live/images/2021/05/22/zipkin.png)
+
+#### zipkin服务端数据保存
+
+因为zipkin默认把链路数据存在内存, 所以重启zipkin服务器会导致旧数据丢失
+
+1. 创建数据库zipkin
+
+   ```mysql
+   CREATE DATABASE /*!32312 IF NOT EXISTS*/`zipkin` /*!40100 DEFAULT CHARACTER SET utf8 */;
+   USE `zipkin`;
+   ```
+
+2. 添加表
+
+   1. 运行https://github.com/openzipkin/zipkin/blob/master/zipkin-storage/mysql-v1/src/main/resources/mysql.sql的sql
+
+3. 修改server的启动命令
+
+   ```
+   java -jar zipkin.jar --STORAGE_TYPE=mysql --MYSQL_HOST=127.0.0.1 --MYSQL_TCP_PORT=3306 --MYSQL_USER=root --MYSQL_PASS=root --MYSQL_DB=zipkin
+   ```
+
+   > https://github.com/openzipkin/zipkin/blob/master/zipkin-server/src/main/resources/zipkin-server-shared.yml
+
+4. 这样配置之后, 再重启时, 数据不会丢失, 依然可以再web UI里查看
+
+#### 基于消息中间件收集数据  
+
+1. 安装rabbit MQ
+
+   1. 启动后访问http://127.0.0.1:15672/#/, 使用guest/guest登录
+
+2. 修改server配置, 改为访问rabbit MQ
+
+   1. 修改server的启动命令
+
+      ```
+      java -jar zipkin.jar --RABBIT_ADDRESSES=127.0.0.1:5672 --RABBIT_USER=guest --RABBIT_PASSWORD=guest
+      ```
+
+3. 修改zipkin客户端以rabbit mq的方式发送链路数据
+
+   1. 给对应的3个微服务添加相关依赖
+
+      ```xml
+      <dependency>
+          <groupId>org.springframework.cloud</groupId>
+          <artifactId>spring-cloud-sleuth-zipkin</artifactId>
+      </dependency>
+      <dependency>
+          <groupId>org.springframework.amqp</groupId>
+          <artifactId>spring-rabbit</artifactId>
+      </dependency>
+      ```
+
+   2. application.yml添加对应配置
+
+      ```yaml
+      spring:
+        rabbitmq:
+          host: localhost
+          port: 5672
+          username: guest
+          password: guest
+          listener: # 这里配置了重试策略
+            direct:
+              retry:
+                enabled: true
+            simple:
+              retry:
+                enabled: true
+      ```
+
+   3. 关闭zipkin
+
+   4. 依次启动微服务, 发送请求
+
+   5. 去rabbit mq查看zipkin queue内ready的消息的数量, 应等于发送请求数量
+
+   6. 启动zipkin
+
+   7. 确认刚刚发送的请求能被查询到
+

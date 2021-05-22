@@ -19,13 +19,27 @@ spring:
             - Path=/order-service/**
           filters: #配置路由过滤器
             - RewritePath=/order-service/(?<segment>.*), /$\{segment} #路径重写的过滤器, 在yml中$写为$\
+#  修改zipkin, 使用rabbit mq 采集数据
   zipkin:
-    base-url: http://127.0.0.1:9411/ #server的请求路径
+    #base-url: http://127.0.0.1:9411/ #server的请求路径
     sender:
-      type: web #数据的传输方式, 以http的方式向server端发送数据
+      type: rabbit #数据的传输方式, 以 rabbit 的方式向server端发送数据
   sleuth:
     sampler:
       probability: 1 #采样比, 默认是0.1, 开发时可以设置为1
+  rabbitmq:
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+    listener: # 这里配置了重试策略
+      direct:
+        retry:
+          enabled: true
+      simple:
+        retry:
+          enabled: true
+  
 # eureka注册中心
 eureka:
   client:
