@@ -92,3 +92,10 @@ RabbitMQ有exchange，kafka有Topic，partitions分区，这些中间件的差�
 
 ![](https://img.raiden.live/images/2021/05/23/1.png)
 
+### 消息消费者的入门案例
+
+1. 和生产者的开发方式很像
+2. 参考`day4/stream_consumer`
+3. 测试时, 先运行`ConsumerApplication`, 再运行一次`ProducerApplication`
+4. Consumer的terminal会出现`获取到消息: Hello 你好`
+
