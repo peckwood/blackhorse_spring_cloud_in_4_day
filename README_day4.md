@@ -99,3 +99,16 @@ RabbitMQ有exchange，kafka有Topic，partitions分区，这些中间件的差�
 3. 测试时, 先运行`ConsumerApplication`, 再运行一次`ProducerApplication`
 4. Consumer的terminal会出现`获取到消息: Hello 你好`
 
+### 基于入门案例的代码优化
+
+视频: 08-基于入门案例的代码优化.avi
+
+企业开发当中, 没人把生产消息写到启动类当中, 我们需要抽取
+
+1. `ProducerApplication`内的关于消息的配置被抽取到了`cn.itcast.stream.MessengerSender`工具类内
+2. `cn.itcast.stream.ConsumerApplication`内关于MessageListener的配置被抽取到了`cn.itcast.stream.consumer.MessageListener`类内
+3. 运行:
+   1. 运行cn.itcast.stream.ConsumerApplication, 启动Consumer, 开始监听消息
+   2. 运行`cn.itcast.stream.ProducerTest#testSend`方法, 使用工具类MessengerSender发送消息
+   3. ConsumerApplication的console会打印出`获取到消息: hello 工具类`
+

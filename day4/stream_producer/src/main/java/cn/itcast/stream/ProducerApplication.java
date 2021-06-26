@@ -9,6 +9,7 @@ import org.springframework.cloud.stream.annotation.EnableBinding;
 import org.springframework.cloud.stream.messaging.Source;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.support.MessageBuilder;
+import org.springframework.stereotype.Component;
 
 /**
  * 入门案例
@@ -21,20 +22,11 @@ import org.springframework.messaging.support.MessageBuilder;
  *      如果需要Message Channel --> 通过绑定内置接口获取
  */
 //通过配置好的Source接口得到MessageChannel
-@EnableBinding(Source.class)
 @SpringBootApplication
-public class ProducerApplication implements CommandLineRunner{
+@Component
+public class ProducerApplication{
     @Autowired
     private MessageChannel output;
-
-
-    @Override
-    public void run(String... args) throws Exception{
-        //发送消息
-        //通过MeesageBuilder工具类创建消息
-
-        output.send(MessageBuilder.withPayload("Hello 你好").build());
-    }
 
     public static void main(String[] args){
         SpringApplication.run(ProducerApplication.class);
