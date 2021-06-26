@@ -12,6 +12,8 @@ spring:
       bindings:
         input: # 内置的获取消息的通道, 从itcast-default中获取消息
           destination: itcast-default
+        myinput:
+          destination: itcase-custom-output
       binders:
         defaultRabbit:
           type: rabbit

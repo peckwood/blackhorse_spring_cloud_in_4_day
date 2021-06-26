@@ -112,3 +112,27 @@ RabbitMQ有exchange，kafka有Topic，partitions分区，这些中间件的差�
    2. 运行`cn.itcast.stream.ProducerTest#testSend`方法, 使用工具类MessengerSender发送消息
    3. ConsumerApplication的console会打印出`获取到消息: hello 工具类`
 
+### 自定义消息通道
+
+对应视频: 09-自定义消息通道.avi
+
+![](https://img.raiden.live/images/2021/05/23/1.png)
+
+##### 逻辑(producer)
+
+1. myoutput.send()
+2. output是MessageChannel
+3. 调`output.send()`的类要加注解`@EnableBinding(MyProcessor.class)`
+4. MyProcessor里包含了关于output的定义
+5. output的destination在配置文件中配置`itcase-custom-output`
+
+#### 逻辑(consumer)
+
+1. 实现`MyMessageListener`
+2. `MyMessageListener`也有注解`@EnableBinding(MyProcessor.class)`, 使用`@StreamListener`加载是MessageChannel类的myinput
+3. input的destination在配置文件中配置`itcase-custom-output`
+
+#### 运行
+
+1. 同优化后的运行方式
+2. 注意要运行`MyProducerTest`里面的@Test方法
