@@ -15,6 +15,9 @@ spring:
           destination: itcast-default
         myoutput:
           destination: itcase-custom-output
+          producer:
+            partition-key-expression: payload #分区表达式  对象中的ID, 对象
+            partition-count: 2 #分区大小
       binders: # 配置绑定器
         defaultRabbit:
           type: rabbit

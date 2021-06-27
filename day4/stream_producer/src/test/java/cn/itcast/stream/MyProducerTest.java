@@ -16,4 +16,11 @@ public class MyProducerTest{
     public void testSend(){
         myMessengerSender.send("hello from myMessengerSender");
     }
+
+    @Test
+    public void testSendMultipleTimes(){
+        for(int i=0;i<5;i++){
+            myMessengerSender.send("1");
+        }
+    }
 }

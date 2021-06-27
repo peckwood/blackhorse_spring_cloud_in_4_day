@@ -165,3 +165,46 @@ spring:
 1. 重新启动2个consumer
 2. 重新调用MyProducerTest发送消息
 3. 发现只有一个consumer接收到了消息
+
+### 消息分区
+
+为了满足, 同一特征的数据被同一个实例消费的应用场景. 我们需要给给消息分区
+
+producer添加配置:
+
+```yaml
+spring:
+  cloud:
+    stream:
+      bindings:
+        myoutput:
+          destination: itcase-custom-output
+          producer:
+            partition-key-expression: payload #分区表达式  对象中的ID, 对象
+            partition-count: 2 #分区大小
+```
+
+consumer1添加配置
+
+```yaml
+spring:
+  cloud:
+    stream:
+      bindings:
+        myinput:
+          destination: itcase-custom-output
+          group: group1 #设置消息的组名称(同名组中的多个消费者, 只有一个会消费消息)
+          consumer:
+            partitioned: true #开启分区支持
+      instance-count: 2 #消费者总数
+      instance-index: 0 #当前消费者的索引
+```
+
+consumer增加相同的配置, 但是`index-index`为1
+
+#### 运行
+
+1. 重新启动2个consumer
+2. 运行`MyProducerTest#testSendMultipleTimes`
+3. 查看2个consumer, 循环发送的所有消息都应该被其中一个consumer接受了, 另一个consumer一条都没有收到
+
