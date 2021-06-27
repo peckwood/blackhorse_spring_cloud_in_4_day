@@ -1,8 +1,8 @@
 server:
-  port: 7002 #服务端口
+  port: 7003 #服务端口
 spring:
   application:
-    name: rabbitmq-consumer #指定服务名
+    name: rabbitmq-consumer-2 #指定服务名
   rabbitmq:
     addresses: 127.0.0.1
     username: guest

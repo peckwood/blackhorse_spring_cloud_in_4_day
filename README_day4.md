@@ -136,3 +136,32 @@ RabbitMQ有exchange，kafka有Topic，partitions分区，这些中间件的差�
 
 1. 同优化后的运行方式
 2. 注意要运行`MyProducerTest`里面的@Test方法
+
+### 消息分组
+
+视频: 10-消息分组.avi
+
+1. 把module`stream_consumer`复制了一份`stream_consumer_2`, 端口改为7003
+2. 开启`ConsumerApplication`和`ConsumerApplication2`
+3. 使用`ProducerTest`或`MyProducerTest`发送一条消息
+4. 2个ConsuemrApplication都接收到了此消息, 因为他们的目的地destination是一样的
+
+>当同一个服务启动多个实例的时候，这些实例都会绑定到同一个消息通道的目标主题（Topic）上  
+
+如果我们希望生产者发送的消息只被其中一个消费者实例消费, 我们需要给他们设置分组
+
+我们修改2个consumer的配置为
+
+```yaml
+spring:
+  cloud:
+    stream:
+      bindings:
+        myinput:
+          destination: itcase-custom-output
+          group: group1 #设置消息的组名称(同名组中的多个消费者, 只有一个会消费消息)
+```
+
+1. 重新启动2个consumer
+2. 重新调用MyProducerTest发送消息
+3. 发现只有一个consumer接收到了消息
