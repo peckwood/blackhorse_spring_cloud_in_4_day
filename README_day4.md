@@ -208,3 +208,38 @@ consumer增加相同的配置, 但是`index-index`为1
 2. 运行`MyProducerTest#testSendMultipleTimes`
 3. 查看2个consumer, 循环发送的所有消息都应该被其中一个consumer接受了, 另一个consumer一条都没有收到
 
+
+
+## 配置中心
+
+微服务的配置管理的需求
+
+- 集中配置管理，一个微服务架构中可能有成百上千个微服务，所以集中配置管理是很重要的。
+- 不同环境不同配置，比如数据源配置在不同环境（开发，生产，测试）中是不同的。
+- 运行期间可动态调整。例如，可根据各个微服务的负载情况，动态调整数据源连接池大小等
+- 配置修改后可自动更新。如配置内容发生变化，微服务可以自动更新配置  
+- 
+
+### Spring Cloud Config
+
+#### 体系
+
+![](https://img.raiden.live/images/2021/08/17/iS8sncvHBt.png)
+
+#### Spring Cloud Config服务端特性  
+
+- HTTP，为外部配置提供基于资源的API（键值对，或者等价的YAML内容）
+- 属性值的加密和解密（对称加密和非对称加密）
+- 通过使用@EnableConfigServer在Spring boot应用中非常简单的嵌入  
+
+1. 在github创建配置仓库`config-repository`
+   1. https://github.com/peckwood/config-repository
+   2. 添加`product-dev.yml`和`product-pro.yml`
+2. 命名规则`{application}-{profile}.yml`
+   1. application为应用名称, profile指开发环境
+3. 搭建配置服务端
+
+#### Config客户端的特性（特指Spring应用）
+
+- 绑定Config服务端，并使用远程的属性源初始化Spring环境。
+- 属性值的加密和解密（对称加密和非对称加密）  
