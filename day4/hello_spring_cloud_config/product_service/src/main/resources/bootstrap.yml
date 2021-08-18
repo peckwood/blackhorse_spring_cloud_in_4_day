@@ -1,0 +1,7 @@
+spring:
+  cloud:
+    config:
+      name: product #自定义的应用名称, 即product-dev里的product
+      profile: pro
+      label: master #git中的分支
+      uri: http://localhost:10001 #config-server的请求地址

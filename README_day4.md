@@ -232,14 +232,28 @@ consumer增加相同的配置, 但是`index-index`为1
 - 属性值的加密和解密（对称加密和非对称加密）
 - 通过使用@EnableConfigServer在Spring boot应用中非常简单的嵌入  
 
-1. 在github创建配置仓库`config-repository`
-   1. https://github.com/peckwood/config-repository
-   2. 添加`product-dev.yml`和`product-pro.yml`
-2. 命名规则`{application}-{profile}.yml`
-   1. application为应用名称, profile指开发环境
-3. 搭建配置服务端
-
 #### Config客户端的特性（特指Spring应用）
 
 - 绑定Config服务端，并使用远程的属性源初始化Spring环境。
 - 属性值的加密和解密（对称加密和非对称加密）  
+
+#### Steps
+
+14-springcloudConfig入门案例：概述.avi - 16-springcloudConfig入门案例：客户端改造，动态获取配置信息.avi
+
+1. 在github创建配置仓库config-repository`https://github.com/peckwood/config-repository`
+
+2. 抽取product service的配置文件
+
+3. 添加product-dev.yml和product-pro.yml
+   1. 命名规则{application}-{profile}.yml
+   2. application为应用名称, profile指开发环境
+4. 搭建配置服务端
+5. 开启配置服务端config-server, 访问`http://localhost:10001/product-dev.yml`已验证配置成功
+6. product-service修改
+   1. product-service引入`spring-cloud-starter-config`依赖
+   2. 删掉application.yml
+   3. 创建优先级更高的`bootstrap.yml`, 优先加载config-server里的配置文件
+7. 启动config-server
+8. 启动Eureka
+9. product会先从config-server获取配置, 再设置端口来启动
