@@ -260,7 +260,7 @@ consumer增加相同的配置, 但是`index-index`为1
 8. 启动Eureka
 9. product会先从config-server获取配置, 再设置端口来启动
 
-#### 动态获取配置信息
+#### 动态获取配置信息 优化
 
 16-springcloudConfig入门案例：客户端改造，动态获取配置信息
 
@@ -316,3 +316,110 @@ steps:
 
 14. 访问`localhost:9002/product/test`, 发现已刷新
 
+#### config server 高可用 改造
+
+18-springcloudConfig高可用-上.avi - 19-springcloudConfig高可用-下.avi
+
+原来的结构是 git > config server > product
+
+现在我们改为
+
+```
+eureka > config server 1 > git
+eureka > config server 2 > git
+eureka > product
+```
+
+这样, 当config server1当掉的时候, product service依然可以通过eureka找到config server2, 实现config server的高可用
+
+steps:
+
+1. 如果有activeMQ运行, 要关闭, 安装rabbit MQ并启动
+
+2. config server添加依赖 `commit f21a66f`
+
+   ```
+           <!--引入EurekaClient-->
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-starter-netflix-eureka-client</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-actuator</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-bus</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+           </dependency>
+   ```
+
+3. config server的yml添加eureka client配置`commit f21a66f`
+
+   ```
+   #配置eureka
+   eureka:
+     client:
+       service-url:
+         # 多个Eureka server之间用逗号隔开
+         defaultZone: http://localhost:9000/eureka
+     instance:
+       prefer-ip-address: true # 使用ip地址注册
+       instance-id: ${spring.cloud.client.ip-address}-${server.port} #向注册中心注册服务id
+   
+   ---
+   spring:
+     profiles: 10001
+   server:
+     port: 10001 #服务端口
+   ---
+   spring:
+     profiles: 10002
+   server:
+     port: 10002 #服务端口
+   ```
+
+4. 创建2个config server的profile
+
+5. 启动2个config server
+
+6. 查看eureka dashboard`http://localhost:9000/`, 确认2个config server已注册
+
+7. 访问http://localhost:10001/product-pro.yml和http://localhost:10002/product-pro.yml, 应该都可以看到配置文件
+
+8. 现在把product-service直接连config-server改为通过eureka连接config-server
+
+9. 把product的eureka客户端配置加回来 并 开启 config server discovery `commit 07bd945`
+
+   ```yaml
+   spring:
+     cloud:
+       config:
+         name: product #自定义的应用名称, 即product-dev里的product
+         profile: pro
+         label: master #git中的分支
+   #      uri: http://localhost:10001 #config-server的请求地址
+         #通过注册中心获取config-server配置
+         #enable config server discovery
+         discovery:
+           enabled: true
+           service-id: config-server
+   #配置eureka
+   eureka:
+     client:
+       service-url:
+         # 多个Eureka server之间用逗号隔开
+         defaultZone: http://localhost:9000/eureka
+     instance:
+       prefer-ip-address: true # 使用ip地址注册
+       instance-id: ${spring.cloud.client.ip-address}-${server.port} #向注册中心注册服务id
+   
+   ```
+
+10. 重启product service
+
+11. 测试product可以访问
