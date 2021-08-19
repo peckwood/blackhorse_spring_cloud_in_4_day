@@ -10,7 +10,6 @@
     <version>1.0-SNAPSHOT</version>
     <modules>
         <module>product_service</module>
-        <module>order_service</module>
         <module>eureka_server</module>
         <module>config_server</module>
     </modules>
