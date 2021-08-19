@@ -4,7 +4,22 @@ spring:
       name: product #自定义的应用名称, 即product-dev里的product
       profile: pro
       label: master #git中的分支
-      uri: http://localhost:10001 #config-server的请求地址
+#      uri: http://localhost:10001 #config-server的请求地址
+      #通过注册中心获取config-server配置
+      #enable config server discovery
+      discovery:
+        enabled: true
+        service-id: config-server
+#配置eureka
+eureka:
+  client:
+    service-url:
+      # 多个Eureka server之间用逗号隔开
+      defaultZone: http://localhost:9000/eureka
+  instance:
+    prefer-ip-address: true # 使用ip地址注册
+    instance-id: ${spring.cloud.client.ip-address}-${server.port} #向注册中心注册服务id
+
 # 开启动态刷新的请求路径端点
 management:
   endpoints:
