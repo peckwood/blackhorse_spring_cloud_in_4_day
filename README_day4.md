@@ -237,7 +237,9 @@ consumer增加相同的配置, 但是`index-index`为1
 - 绑定Config服务端，并使用远程的属性源初始化Spring环境。
 - 属性值的加密和解密（对称加密和非对称加密）  
 
-#### Steps
+
+
+#### Hello Spring Cloud 工程
 
 14-springcloudConfig入门案例：概述.avi - 16-springcloudConfig入门案例：客户端改造，动态获取配置信息.avi
 
@@ -257,3 +259,60 @@ consumer增加相同的配置, 但是`index-index`为1
 7. 启动config-server
 8. 启动Eureka
 9. product会先从config-server获取配置, 再设置端口来启动
+
+#### 动态获取配置信息
+
+16-springcloudConfig入门案例：客户端改造，动态获取配置信息
+
+steps:
+
+1. 启动3个微服务
+
+2. 修改码云上的`product-pro.yml`的name为`itcast-pro`
+
+3. 调用`http://localhost:10001/product-pro.yml`, 发现请求到的配置文件对应地更新了
+
+4. 重新请求`localhost:9002/product/test`, 发现还是返回旧的`itcast-pro`
+
+5. 重启微服务product, 发现修改生效了
+
+6. 现在需要改为不重启就生效, 通过手动刷新
+
+7. product pom添加actuator依赖 `commit 3ff7319`
+
+   ```xml
+           <dependency>
+               <groupId>org.springframework.boot</groupId>
+               <artifactId>spring-boot-starter-actuator</artifactId>
+           </dependency>
+   ```
+
+8. yml添加配置, 暴露endpoint `commit 3ff7319`
+
+   ```
+   # 开启动态刷新的请求路径端点
+   management:
+     endpoints:
+       web:
+         exposure:
+           include: refresh
+   ```
+
+9. 在需要动态刷新的类ProductControlelr添加注解 `commit 3ff7319`
+
+   ```java
+   //开启动态刷新
+   @RefreshScope
+   public class ProductController{
+   ```
+
+10. 启动product
+
+11. 修改远程git里的name
+
+12. 访问`localhost:9002/product/test`, 发现没变
+
+13. 使用post方式请求`http://localhost:9002/actuator/refresh`
+
+14. 访问`localhost:9002/product/test`, 发现已刷新
+
