@@ -423,3 +423,75 @@ steps:
 10. 重启product service
 
 11. 测试product可以访问
+
+#### 结合消息总线bus动态修改配置文件信息
+
+每次修改git里的配置文件后, 都需要在**所有相关**的微服务中, 请求refresh接口, 这样有些麻烦.
+
+在微服务架构中，通常会使用轻量级的消息代理来构建一个共用的消息主题来连接各个微服务实例，它广播的消息会被所有在注册中心的微服务实例监听和消费，也称消息总线。
+SpringCloud中也有对应的解决方案，SpringCloud Bus 将分布式的节点用轻量的消息代理连接起来，可以很容易搭建消息总线，配合SpringCloud config 实现微服务应用配置信息的动态更新  
+
+利用Spring Cloud Bus做配置更新的步骤:
+
+1. 提交代码触发post请求给bus/refresh
+2. server端接收到请求并发送给Spring Cloud Bus
+3. Spring Cloud bus接到消息并通知给其它客户端
+4. 其它客户端接收到通知，请求Server端获取最新配置
+5. 全部客户端均获取到最新的配置  
+
+##### Steps
+
+1. 参考视频: `20-springcloudConfig：结合消息总线bus动态修改配置文件信息.avi`
+
+2. 复制了`spring_cloud_config_high_availability`作为消息总线项目`spring_cloud_config_bus`的起始点 `4a075ff`
+
+3. config server 添加消息总线的依赖
+
+   ```xml
+           <!--消息总线的依赖-->
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-bus</artifactId>
+           </dependency>
+           <dependency>
+               <groupId>org.springframework.cloud</groupId>
+               <artifactId>spring-cloud-stream-binder-rabbit</artifactId>
+           </dependency>
+   ```
+
+4. config server 添加rabbit mq配置:
+
+   ```yaml
+   spring:
+     rabbitmq:
+       host: 127.0.0.1
+       port: 5672
+       username: guest
+       password: guest
+   ```
+
+5. conifg server 暴露bus-refresh endpoint
+
+   ```
+   management:
+     endpoints:
+       web:
+         exposure:
+           include: bus-refresh
+   ```
+
+6. 去掉product service的旧的暴露端点refresh
+
+7. product service 在git repo的`product-pro.yml`里添加rabbit mq配置`e7f2721673d0974d114660e47eb6d8c9326f996f`
+
+8. start rabbit MQ
+
+9. 启动所有微服务 eureka > config server > product service
+
+10. visit http://localhost:9002/product/test and take note of the values
+
+11. updated name to `itcast-pro3` in git config repository
+
+12. visit http://localhost:9002/product/test again and it was not updated
+
+13. send a post request to http://localhost:10001/actuator/bus-refresh and call test again and it is updated

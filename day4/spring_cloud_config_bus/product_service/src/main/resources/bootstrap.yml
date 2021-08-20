@@ -19,10 +19,3 @@ eureka:
   instance:
     prefer-ip-address: true # 使用ip地址注册
     instance-id: ${spring.cloud.client.ip-address}-${server.port} #向注册中心注册服务id
-
-# 开启动态刷新的请求路径端点
-management:
-  endpoints:
-    web:
-      exposure:
-        include: refresh
