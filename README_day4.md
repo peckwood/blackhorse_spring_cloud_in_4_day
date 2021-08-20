@@ -445,7 +445,7 @@ SpringCloud中也有对应的解决方案，SpringCloud Bus 将分布式的节�
 
 2. 复制了`spring_cloud_config_high_availability`作为消息总线项目`spring_cloud_config_bus`的起始点 `4a075ff`
 
-3. config server 添加消息总线的依赖
+3. config server 添加消息总线的依赖 `67da1d1`
 
    ```xml
            <!--消息总线的依赖-->
@@ -459,7 +459,7 @@ SpringCloud中也有对应的解决方案，SpringCloud Bus 将分布式的节�
            </dependency>
    ```
 
-4. config server 添加rabbit mq配置:
+4. config server 添加rabbit mq配置: `67da1d1`
 
    ```yaml
    spring:
@@ -470,7 +470,7 @@ SpringCloud中也有对应的解决方案，SpringCloud Bus 将分布式的节�
        password: guest
    ```
 
-5. conifg server 暴露bus-refresh endpoint
+5. conifg server 暴露bus-refresh endpoint `67da1d1`
 
    ```
    management:
@@ -480,18 +480,20 @@ SpringCloud中也有对应的解决方案，SpringCloud Bus 将分布式的节�
            include: bus-refresh
    ```
 
-6. 去掉product service的旧的暴露端点refresh
+6. product service 添加消息总线的依赖 `67da1d1`
 
-7. product service 在git repo的`product-pro.yml`里添加rabbit mq配置`e7f2721673d0974d114660e47eb6d8c9326f996f`
+7. 去掉product service的旧的暴露端点refresh `67da1d1`
 
-8. start rabbit MQ
+8. product service 在git repo的`product-pro.yml`里添加rabbit mq配置`e7f2721673d0974d114660e47eb6d8c9326f996f`
 
-9. 启动所有微服务 eureka > config server > product service
+9. start rabbit MQ
 
-10. visit http://localhost:9002/product/test and take note of the values
+10. 启动所有微服务 eureka > config server > product service
 
-11. updated name to `itcast-pro3` in git config repository
+11. visit http://localhost:9002/product/test and take note of the values
 
-12. visit http://localhost:9002/product/test again and it was not updated
+12. updated name to `itcast-pro3` in git config repository
 
-13. send a post request to http://localhost:10001/actuator/bus-refresh and call test again and it is updated
+13. visit http://localhost:9002/product/test again and it was not updated
+
+14. send a post request to http://localhost:10001/actuator/bus-refresh and call test again and it is updated
