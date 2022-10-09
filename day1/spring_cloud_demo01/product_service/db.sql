@@ -18,6 +18,7 @@
 --
 -- Table structure for table `tb_product`
 --
+CREATE DATABASE `shop` /*!40100 COLLATE 'utf8mb4_unicode_ci' */
 
 DROP TABLE IF EXISTS `tb_product`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
