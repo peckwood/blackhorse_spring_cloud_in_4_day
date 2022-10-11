@@ -8,7 +8,7 @@ public class ProductFeignClientCallback implements ProductFeignClient{
     @Override
     public Product findById(Long id){
         Product product = new Product();
-        product.setProductName("feign调用出发熔断降级");
+        product.setProductName("feign调用触发熔断降级");
         return product;
     }
 }
