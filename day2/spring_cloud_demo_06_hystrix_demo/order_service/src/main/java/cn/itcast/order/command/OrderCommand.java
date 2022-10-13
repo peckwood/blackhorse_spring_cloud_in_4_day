@@ -18,19 +18,19 @@ public class OrderCommand extends HystrixCommand<Product>{
 
 	private static Setter setter() {
 
-		// 设置服务分组
+		// 服务分组
 		HystrixCommandGroupKey groupKey = HystrixCommandGroupKey.Factory.asKey("order_product");
-		// 设置服务标识
+		// 服务标识
 		HystrixCommandKey commandKey = HystrixCommandKey.Factory.asKey("product");
-		// 设置线程池名称
+		// 线程池名称
 		HystrixThreadPoolKey threadPoolKey = HystrixThreadPoolKey.Factory.asKey("order_product_pool");
 		/**
 		 * 线程池配置
-		 *     withCoreSize :  线程池大小为50
+		 *     withCoreSize :  线程池大小
 		 *     withKeepAliveTimeMinutes:  线程存活时间15秒
 		 *     withQueueSizeRejectionThreshold  :队列等待的阈值为100,超过100执行拒绝策略
 		 */
-		HystrixThreadPoolProperties.Setter threadPoolProperties = HystrixThreadPoolProperties.Setter().withCoreSize(50)
+		HystrixThreadPoolProperties.Setter threadPoolProperties = HystrixThreadPoolProperties.Setter().withCoreSize(8)
 				.withKeepAliveTimeMinutes(15).withQueueSizeRejectionThreshold(100);
 
 		// 命令属性配置Hystrix 开启超时
